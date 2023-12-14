@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import click
 from models import Client, session
+import re
 
 
 @click.group()
@@ -25,6 +26,10 @@ def welcome():
     click.secho((welcome_message), fg="yellow", bold=True)
 
 
+def Homepage():
+    pass
+
+
 @welcome.command()
 @click.option('--email', '-e', prompt="Enter your email")
 @click.option('--password', '-p', prompt="Enter your password")
@@ -46,8 +51,23 @@ def sign_in(email, password):
 @click.option('--contact_number', prompt=True)
 def sign_up(name, email, password, contact_number):
     """Create a new account"""
-    click.echo(f"name: {name}\n" +
-               f"password: {password}\n" + f"email: {email}")
+    pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+    reg = re.compile(pattern)
+    valid_email = reg.fullmatch(email)
+    if valid_email:
+        client = Client(
+            client_name=name,
+            email=email,
+            password=password,
+            contact_number=contact_number
+        )
+        session.add(client)
+        session.commit()
+        session.close()
+        click.secho(("Account has been created successfuly"), fg="green")
+
+    else:
+        click.secho(("Invalid email address.Please try again.."), fg="red")
 
 
 if __name__ == '__main__':
