@@ -115,10 +115,3 @@ def sign_up(name, email, password, contact_number):
 
 if __name__ == '__main__':
     welcome()
-
-
-# login and signup of clients
-# import the Client model call => Client
-# def signup
-# def login
-# def welcome L S

@@ -4,7 +4,7 @@ import random
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from models import Cleaner, CleaningTask, Client, ClientTask
+from models import Cleaner, CleaningTask, Client, ClientTask, Base
 
 fake = Faker()
 
@@ -55,6 +55,7 @@ cleaning_tasks = [
 if __name__ == '__main__':
 
     engine = create_engine('sqlite:///clean_slate.db')
+    Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
     # empty previous data
