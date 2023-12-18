@@ -28,7 +28,7 @@ def welcome():
     click.secho((welcome_message), fg="yellow", bold=True)
 
 
-def home_page(current_user_id):
+def home_page(current_user):
     # fetch all tasks
     cleaning_tasks = session.query(CleaningTask).all()
     # click.echo(cleaning_tasks)
@@ -48,12 +48,12 @@ def home_page(current_user_id):
                       str(item.price), item.cleaner.full_name)
 
     console.print(
-        "Here are the variety of services we offer. Enter a task id to choose and book a cleaning session with us", style="blue")
+        f"Hello {current_user.client_name} 👋👋👋.\nHere are the variety of services we offer. Enter a task id to choose and book a cleaning session with us", style="blue")
     console.print(table)
     client_input = click.prompt("Please select task id", type=int)
     if client_input in range(1, (cleaning_tasks[-1].task_id + 1)):
         client_task = ClientTask(
-            client_id=current_user_id,
+            client_id=current_user.id,
             task_id=client_input
         )
         session.add(client_task)
@@ -67,12 +67,12 @@ def home_page(current_user_id):
     else:
         console.print(
             "Invalid task choice, please select a valid task id", style="bold red")
-        home_page(current_user_id)
+        home_page(current_user)
 
 
 @welcome.command()
 @click.option('--email', '-e', prompt="Enter your email")
-@click.option('--password', '-p', prompt="Enter your password")
+@click.option('--password', '-p', prompt="Enter your password", hide_input=True)
 def sign_in(email, password):
     """Log in using name and password"""
     user = session.query(Client).filter_by(
@@ -80,7 +80,7 @@ def sign_in(email, password):
 
     if user:
         click.secho(("Login successful"), fg="green")
-        home_page(user.client_id)
+        home_page(user)
     else:
         click.secho(("Login failed"), fg="red")
 
@@ -106,9 +106,8 @@ def sign_up(name, email, password, contact_number):
         )
         session.add(client)
         session.commit()
-        session.close()
         click.secho(("Account has been created successfuly"), fg="green")
-        home_page(client.client_id)
+        home_page(client)
     else:
         click.secho(("Invalid email address.Please try again.."), fg="red")
 
